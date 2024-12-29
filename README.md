@@ -40,6 +40,21 @@ _An autoregressive transformer trained on millions of Knight's moves encoded as 
 ![](./plots_kt/tours_16x16.png)
 **Figure 7.** In this example, the model was made to generate 256 tours from the position B2. All tours beginning from position B2 were omitted from the training set. Only three out of 256 generated examples had erroneous knight’s moves. In all the cases, the erroneous moves were made when the model "boxed itself" in one part of the board and had no legal knight’s moves left.
 
+## Reproducibility
+
+1. Clone this repository
+2. With a python environment setup, run `pip install requirements.txt` to download the necessary packages
+3. For data generation: note that the due to sheer size of the tours generated for
+this project, your dataset may differ from the one I generated. However, all the data
+generation scrips have random seeds included for better replication.
+    - `generate_tours.py`: This script uses the Warnsdorff rule-based solution algorithm and multiprocessing to generate tours. Run this using the parser arguments defined to generate ~5 million tours. 
+    - `generate_tours_bt.py`: This code uses Warnsdorff and backtracking to generate tours. It automatically reads the parquet file with previously generated tours and appends new tours into them. Generate ~1.5 million solutions using this script. 
+    - `generate_tours_quadrant.py`: Run this script locally on your computer. No arguments are required. It will generate 18 million solutions from the top-left quadrant of the chessboard. This script should take around ~6-8 hours to run.
+    - `generate_tours_parberry.py`: Use this file to create 2900 test cases to gauge model generalization.
+4.  Next, navigate to `./exploratory_code/tour_augmentation_notebook.ipynb` to augment the generated tours. Note that you will have to replace the name of the generated file (as the name contains the date when the file was created) and combine the 18 tours quadrant tours from `generate_tours_quadrant.py` with the one created using `generate_tours.py` and `generate_tours_bt.py` (note these two will already be combined). After this, simply run the code sequentially to expand the dataset size by a factor of 8 and create a testing, validation, and training set.
+5. Run the model using `train_model2.py` to train a smaller version of GPT-2 on the training set. Note that this script accepts arguments to train the model on multiple GPUs and a smaller portion of the data. The best model used in this project was trained on 25% of the data. However, they may need to be modified based on the length of your dataset.
+6. After training, use `testing_the_models.ipynb` to gauge some basic performance measures of the model. The checkpoint name at the beginning (within `model_dirs`) will need to be modified as which checkpoint you use will depend on your training run (and how many models you train).
+
 ## Further improvements
 #### 1. Better training data generation
 In the beginning, I didn’t consider the board’s symmetry when generating tours. This meant that a lot of tours generated using the Warnsdorff and Warnsdorff & backtracking algorithm ended up being identical (due to symmetry). Later, I primarily used the backtracking-only algorithm to generate unique tours, and I would have saved a lot of compute and time had I started with this algorithm earlier.
