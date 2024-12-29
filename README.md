@@ -12,21 +12,42 @@ _Solving the Knight's Tour puzzle using an Autoregressive Transformer._
 - I configured a ~57 million parameter GPT-2 model and trained it on 1%, 10%, and 25% of the data for an epoch on two P100 GPUs
 - To test model generalization, I used [Parberry's algorithm](https://www.sciencedirect.com/science/article/pii/S0166218X96000108) to generate 1191 partial tours (these partial tour patterns are not present in the training dataset).
 - **Preliminary Results**
-    - The models virtually never make illegal Knight moves;  (error 
-    - All the models are able to solve tours from unseen starting positions (even starting positions omitted from the training data)
+    - The models virtually never make illegal Knight moves; the error rate is ~1% for the models trained on all three subsets of the training set.
+    - All the models are able to solve tours from unseen starting positions (even starting positions omitted from the training data).
     - The models show some level of generalization as they are able to solve 815-999 out of the 1191 Parberry tours.
     - There is weak evidence of scaling leading to better model performance as the model version trained on 25% of the training data is able to solve the largest number of unseen Parberry tours.
- 
-## Further improvements
-#### 1 Better tour generation
-In the beginning, we didn’t consider the board’s symmetry when generating tours. This meant that a lot of tours generated using the Warnsdorff and Warnsdorff & backtracking algorithm ended up being identical (due to symmetry). Later, we primarily used the backtracking-only algorithm to generate unique tours, and we would have saved a lot of compute and time had we started with this algorithm earlier.
 
-A more fundamental issue is the structure of the tours due to the backtracking algorithm (the first ∼45 steps of tours beginning from a particular position tend to be identical, see figure 10). This makes the model default to a particular solution instead of creatively exploring different possible solutions (since it sees those extremely common sequences several times). The solution here would be exploring other algorithms which generate more diverse tours; we haven’t found any other algorithm yet which can generate millions of unique solutions in a reasonable amount of time.
-#### Masked modeling to make the model predict moves in the middle of the tour
-Can the model complete tours if the first and last position are provided? Or, if the first n and last m positions are provided? Or, can the model fill in a tour when the first n moves, m moves in the middle, and o moves in the end are given? During training, a special masking token could be added to test tour generation under increased constraints.
-#### Training on varying sequence lengths to test if the model can learn tours of varying lengths on different sized chessboards
-The most efficient and successful Knight’s tour solving algorithms are able to solve tours for any chessboard (for which feasible solutions exist). Our models weren’t able to do so as they weren’t trained on indices belonging to larger or smaller chessboards. Generating tours of varying lengths for various chessboards, padding them, and then training the model on such data would highlight if autoregressive models are able to generalize even further. For testing, boards not present in the training data could be used.
-#### Better test of scaling
+## Illustrative Plots
+
+![](./plots_kt/sample_kt_data.png)
+**Figure 1.** A screengrab of one of the datasets that was omitted from training. Each row here represents a Knight’s tour on the chessboard. During training, the rows were combined as a single sequence and passed to the model for training. All the generated tours were sequences of 64 integer digits ranging from `[0, 63]`, where each digit corresponded to a position on the chessboard. While the tours were generated using adjacency lists of all the vertices, no two-dimensional positional information were encoded in the generated training data. 
+
+![](./plots_kt/training_curves.png)
+**Figure 2.** This plot shows the training and evaluation loss during model training; the axes of the graphs are set to the logarithmic scale.
+
+![](./plots_kt/parberry_stitched_example.png)
+**Figure 3.** An example of a Parberry tour, which are generated for sub-boards separately and stictched together later. The 1191 partial tours generated for testing generalization only contained the first 40 moves on the 5 x 8 sub-board. The model generated the remaining 24 moves. 
+
+![](./plots_kt/standard_example3_model3.png)
+**Figure 4.** A standard 8 x 8 tour solved by the model trained on 25% of the training data.
+
+![](./plots_kt/parberry_example3_model3.png)
+**Figure 5.** A Parberry tour succesfully completed by the model trained on 25% of the training data.
+
+![](./plots_kt/parberry_example1_model3.png)
+**Figure 6.** A case where the model trained on 25% of the training data makes an illegal Knight's move and produces a wrong solution.
+
+## Further improvements
+#### 1. Better training data generation
+In the beginning, I didn’t consider the board’s symmetry when generating tours. This meant that a lot of tours generated using the Warnsdorff and Warnsdorff & backtracking algorithm ended up being identical (due to symmetry). Later, I primarily used the backtracking-only algorithm to generate unique tours, and I would have saved a lot of compute and time had I started with this algorithm earlier.
+
+A more fundamental issue is the structure of the tours due to the backtracking algorithm (the first ∼45 steps of tours beginning from a particular position tend to be identical, see figure 10). This makes the model default to a particular solution instead of creatively exploring different possible solutions (since it sees those extremely common sequences several times). The solution here would be exploring other algorithms which generate more diverse tours; I haven’t found any other algorithm yet which can generate millions of unique solutions in a reasonable amount of time.
+![](./plots_kt/unique_moves.png)
+#### 2. Training on varying sequence lengths to test if the model can learn tours of varying lengths on different sized chessboards
+The most efficient and successful Knight’s tour solving algorithms are able to solve tours for any chessboard (for which feasible solutions exist). My models weren’t able to do so as they weren’t trained on indices belonging to larger or smaller chessboards. Generating tours of varying lengths for various chessboards, padding them, and then training the model on such data would highlight if autoregressive models are able to generalize even further. For testing, boards not present in the training data could be used.
+#### 3. Better test of scaling
 Training models of varying sizes and ones trained on varying fractions of the training set could be used to test the combination of parameter and dataset size that enables these models to successfully solve combinatorial problems such as the Knight’s tour. There may exist a threshold after which models are virtually always successful at solving all unseen Parberry tours.
-#### Using interpretability methods to better understand the model
+#### 4. Using interpretability methods to better understand the model
 Linear probes or sparse autoencoders could be employed to gauge if the model has developed an internal representation of the board state or a graph structure. If such a board or graph structure is found, then it may suggest that autoregressive transformers are able to conceptualize spatial relations despite not having been explicitly trained on two-dimensional chessboard data. Such methods would also help highlight the precise reasons why the model fails at certain unseen tours.
+#### 5. Masked modeling to make the model predict moves in the middle of the tour
+Can the model complete tours if the first and last position are provided? Or, if the first n and last m positions are provided? Or, can the model fill in a tour when the first n moves, m moves in the middle, and o moves in the end are given? During training, a special masking token could be added to test tour generation under increased constraints.
