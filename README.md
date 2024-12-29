@@ -1,7 +1,7 @@
 # The Knight's GPT
 _An autoregressive transformer trained on millions of Knight's moves encoded as single-digit integers shows evidence of learning and generalization as it is successfully able to solve the Knight's Tour puzzle from any starting position and on unseen partial tours._
 
-<img src="https://img.shields.io/badge/Status-Complete-orange" alt="Status" height="40">
+<img src="https://img.shields.io/badge/Status-In_progress-orange" alt="Status" height="40">
 <img src="https://img.shields.io/badge/Currently_Working_On-Training_more_models-8A2BE2" alt="Currently Working On" height="30">
 
 ## tl;dr 
