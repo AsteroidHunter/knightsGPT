@@ -1,5 +1,5 @@
 # The Knight's GPT
-_Solving the Knight's Tour puzzle using an Autoregressive Transformer._
+_An autoregressive transformer trained on millions of Knight's moves encoded as single-digit integers shows evidence of learning and generalization as it is successfully able to solve the Knight's Tour puzzle from any starting position and on unseen partial tours._
 
 <img src="https://img.shields.io/badge/Status-Complete-orange" alt="Status" height="40">
 <img src="https://img.shields.io/badge/Currently_Working_On-Training_more_models-8A2BE2" alt="Currently Working On" height="30">
@@ -37,12 +37,16 @@ _Solving the Knight's Tour puzzle using an Autoregressive Transformer._
 ![](./plots_kt/parberry_example1_model3.png)
 **Figure 6.** A case where the model trained on 25% of the training data makes an illegal Knight's move and produces a wrong solution.
 
+![](./plots_kt/tours_16x16.png)
+**Figure 7.** In this example, the model was made to generate 256 tours from the position B2. All tours beginning from position B2 were omitted from the training set. Only three out of 256 generated examples had erroneous knight’s moves. In all the cases, the erroneous moves were made when the model "boxed itself" in one part of the board and had no legal knight’s moves left.
+
 ## Further improvements
 #### 1. Better training data generation
 In the beginning, I didn’t consider the board’s symmetry when generating tours. This meant that a lot of tours generated using the Warnsdorff and Warnsdorff & backtracking algorithm ended up being identical (due to symmetry). Later, I primarily used the backtracking-only algorithm to generate unique tours, and I would have saved a lot of compute and time had I started with this algorithm earlier.
 
 A more fundamental issue is the structure of the tours due to the backtracking algorithm (the first ∼45 steps of tours beginning from a particular position tend to be identical, see figure 10). This makes the model default to a particular solution instead of creatively exploring different possible solutions (since it sees those extremely common sequences several times). The solution here would be exploring other algorithms which generate more diverse tours; I haven’t found any other algorithm yet which can generate millions of unique solutions in a reasonable amount of time.
 ![](./plots_kt/unique_moves.png)
+**Figure 8.** The picture here shows that the rate of uniqueness in the training set only increases after the ∼45th move. It suggests that there may be a possible lack of diversity within training examples.
 #### 2. Training on varying sequence lengths to test if the model can learn tours of varying lengths on different sized chessboards
 The most efficient and successful Knight’s tour solving algorithms are able to solve tours for any chessboard (for which feasible solutions exist). My models weren’t able to do so as they weren’t trained on indices belonging to larger or smaller chessboards. Generating tours of varying lengths for various chessboards, padding them, and then training the model on such data would highlight if autoregressive models are able to generalize even further. For testing, boards not present in the training data could be used.
 #### 3. Better test of scaling
