@@ -1,10 +1,8 @@
 # The Knight's GPT
 _An autoregressive transformer trained on millions of Knight's moves encoded as single-digit integers shows evidence of learning and generalization as it is successfully able to solve the Knight's Tour puzzle from any starting position and on unseen partial tours._
 
-<img src="https://img.shields.io/badge/Status-On_hiatus-orange" alt="Status" height="40">
-<img src="https://img.shields.io/badge/Currently_Working_On-Assembling_compute-8A2BE2" 
-alt="Currently 
-Working On" height="30">
+<img src="https://img.shields.io/badge/Status-Complete-green" alt="Status" height="40">
+<img src="https://img.shields.io/badge/Currently_Working_On-Nil-8A2BE2" alt="Currently Working On" height="30">
 
 ## tl;dr 
 - The [Knight's Tour](https://en.wikipedia.org/wiki/Knight%27s_tour) puzzle can be summarized concisely using the following question: _Given the rules of chess, is it possible for a knight to traverse the board and visit each square only once?_
