@@ -26,7 +26,7 @@ _An autoregressive transformer trained on millions of Knight's moves encoded as 
 **Figure 2.** This plot shows the training and evaluation loss during model training; the axes of the graphs are set to the logarithmic scale.
 
 ![](./plots_kt/parberry_stitched_example.png)
-**Figure 3.** An example of a Parberry tour, which are generated for sub-boards separately and stictched together later. The 1191 partial tours generated for testing generalization only contained the first 40 moves on the 5 x 8 sub-board. The model generated the remaining 24 moves. 
+**Figure 3.** An example of a Parberry tour, which are generated for sub-boards separately and stitched together later. The 1191 partial tours generated for testing generalization only contained the first 40 moves on the 5 x 8 sub-board. The model generated the remaining 24 moves. 
 
 ![](./plots_kt/standard_example3_model3.png)
 **Figure 4.** A standard 8 x 8 tour solved by the model trained on 25% of the training data.
