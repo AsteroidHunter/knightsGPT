@@ -43,7 +43,7 @@ _An autoregressive transformer trained on millions of Knight's moves encoded as 
 ## Reproducibility
 
 1. Clone this repository
-2. With a python environment setup, run `pip install requirements.txt` to download the necessary packages
+2. With a python environment setup, run `pip install -r requirements.txt` to download the necessary packages
 3. For data generation: note that the due to sheer size of the tours generated for
 this project, your dataset may differ from the one I generated. However, all the data
 generation scrips have random seeds included for better replication.
